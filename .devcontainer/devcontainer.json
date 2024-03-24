@@ -18,7 +18,12 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "yarn install"
+	"postCreateCommand": "yarn install",
+	"portsAttributes": {
+		"3011": {
+			"label": "3000"
+		}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},

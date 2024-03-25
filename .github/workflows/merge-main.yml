@@ -1,4 +1,5 @@
 name: Auto merge main to dev
+
 on:
   push:
     branches:

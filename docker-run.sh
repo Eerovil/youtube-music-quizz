@@ -1,11 +1,17 @@
 #!/bin/sh
 
-# Get current git branch
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
+# Get env param
+ENV=$1
 
-docker build -t youtube-music-quiz:$BRANCH .
+# default env is dev
+if [ -z "$ENV" ]; then
+  ENV=dev
+fi
+
+docker build -t youtube-music-quiz:$ENV .
 
 # Run the container
-echo "Running container with branch: $BRANCH"
+echo "Running container with branch: $ENV"
 
-docker run -it youtube-music-quiz:$BRANCH
+# Use hostname alias youtube-music-quiz-$ENV.
+docker run --rm --network tunnel --name youtube-music-quiz-$ENV -it youtube-music-quiz:$ENV

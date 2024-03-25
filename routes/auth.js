@@ -11,10 +11,12 @@ var db = require('../db');
 // behalf, along with the user's profile.  The function must invoke `cb`
 // with a user object, which will be set at `req.user` in route handlers after
 // authentication.
+const host = process.env['HOST_URL'] || '';
+
 passport.use(new GoogleStrategy({
   clientID: process.env['GOOGLE_CLIENT_ID'],
   clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-  callbackURL: '/oauth2/redirect/google',
+  callbackURL: host + '/oauth2/redirect/google',
   scope: [ 'profile' ]
 }, function verify(issuer, profile, cb) {
   db.get('SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?', [

@@ -1,0 +1,19 @@
+name: Auto merge main to dev
+permissions:
+  contents: write
+on:
+  push:
+    branches:
+      - main
+jobs:
+  mergeToDev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Merge main -> dev
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: dev
+          github_token: ${{ secrets.GITHUB_TOKEN }}

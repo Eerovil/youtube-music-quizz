@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  createPR:
+  mergeToDev:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

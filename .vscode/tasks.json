@@ -4,7 +4,7 @@
         {
             "label": "Entrypoint",
             "type": "shell",
-            "command": "entrypoint.sh",
+            "command": "sh entrypoint.sh",
             "presentation": {
                 "reveal": "always",
                 "panel": "new",

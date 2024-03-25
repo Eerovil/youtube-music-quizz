@@ -1,5 +1,6 @@
 name: Auto merge main to dev
-
+permissions:
+  contents: write
 on:
   push:
     branches:

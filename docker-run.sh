@@ -14,4 +14,4 @@ docker build -t youtube-music-quiz:$ENV .
 echo "Running container with branch: $ENV"
 
 # Use hostname alias youtube-music-quiz-$ENV.
-docker run --network tunnel -it youtube-music-quiz:$ENV --name youtube-music-quiz-$ENV
+docker run --network tunnel --name youtube-music-quiz-$ENV -it youtube-music-quiz:$ENV

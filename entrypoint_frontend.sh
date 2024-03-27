@@ -5,4 +5,6 @@ if [ -z "$IN_DEVCONTAINER" ]; then
     exit
 fi
 
-npm run watch
+cd frontend
+
+yarn watch

@@ -2,9 +2,23 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Entrypoint",
+            "label": "Express",
             "type": "shell",
             "command": "sh entrypoint.sh",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "close": true
+            },
+            "problemMatcher": [],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "Vue",
+            "type": "shell",
+            "command": "sh entrypoint_frontend.sh",
             "presentation": {
                 "reveal": "always",
                 "panel": "new",

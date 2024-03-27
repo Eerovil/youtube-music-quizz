@@ -11,7 +11,7 @@ RUN yarn install
 
 # Install frontend
 WORKDIR /usr/src/app
-COPY frontend ./
+COPY frontend ./frontend
 WORKDIR /usr/src/app/frontend
 
 # Build frontend to public

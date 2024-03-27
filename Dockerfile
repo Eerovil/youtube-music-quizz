@@ -22,6 +22,8 @@ RUN yarn install && \
     cd .. && \
     rm -rf frontend
 
+WORKDIR /usr/src/app
+
 # Bundle app source (this copies frontend also but whatever)
 COPY . .
 

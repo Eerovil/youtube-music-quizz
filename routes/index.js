@@ -1,4 +1,4 @@
-var express = require('express');
+const { Router } = require('websocket-express');
 var ensureLogIn = require('connect-ensure-login').ensureLoggedIn;
 var db = require('../db');
 
@@ -25,7 +25,7 @@ function fetchTodos(req, res, next) {
   });
 }
 
-var router = express.Router();
+var router = new Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

@@ -1,7 +1,8 @@
 require('dotenv').config();
 
 var createError = require('http-errors');
-var express = require('express');
+const { WebSocketExpress } = require('websocket-express');
+console.log(WebSocketExpress);
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
@@ -16,7 +17,7 @@ var SQLiteStore = require('connect-sqlite3')(session);
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 
-var app = express();
+const app = new WebSocketExpress();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,10 +26,10 @@ app.set('view engine', 'ejs');
 app.locals.pluralize = require('pluralize');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(WebSocketExpress.json());
+app.use(WebSocketExpress.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(WebSocketExpress.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'keyboard cat',
   resave: false, // don't save session if unmodified

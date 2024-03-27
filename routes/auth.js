@@ -1,4 +1,4 @@
-var express = require('express');
+const { Router } = require('websocket-express');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oidc');
 var db = require('../db');
@@ -25,8 +25,9 @@ passport.use(new GoogleStrategy({
   ], function(err, row) {
     if (err) { return cb(err); }
     if (!row) {
-      db.run('INSERT INTO users (name) VALUES (?)', [
-        profile.displayName
+      let userName = profile.displayName.replace(/\s/g, '');
+      db.run('INSERT INTO users (username) VALUES (?)', [
+        userName
       ], function(err) {
         if (err) { return cb(err); }
         var id = this.lastID;
@@ -38,7 +39,7 @@ passport.use(new GoogleStrategy({
           if (err) { return cb(err); }
           var user = {
             id: id,
-            name: profile.displayName
+            username: userName
           };
           return cb(null, user);
         });
@@ -75,7 +76,7 @@ passport.deserializeUser(function(user, cb) {
 });
 
 
-var router = express.Router();
+var router = new Router();
 
 /* GET /login
  *

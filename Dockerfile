@@ -10,17 +10,15 @@ COPY yarn.lock ./
 RUN yarn install
 
 # Install frontend
+WORKDIR /usr/src/app
+COPY frontend ./
 WORKDIR /usr/src/app/frontend
-COPY frontend/package*.json ./
-COPY frontend/yarn.lock ./
 
-# Build frontend and copy to public
+# Build frontend to public
 # Remove frontend folder to delete all build time
 # stuff and keep the image size small
 RUN yarn install && \
     npm run build && \
-    cp -r dist/* ../public/ && \
-    rm -rf dist && \
     cd .. && \
     rm -rf frontend
 

@@ -25,6 +25,8 @@ export default {
             this.$store.commit('setUser', data.user);
             console.log('Logged in as', data.user);
             this.$store.commit('setCsrfToken', data.csrftoken)
+            this.$store.commit('setRooms', data.rooms)
+            this.$store.commit('setRoom', data.room)
         },
         async logout() {
             // POST to /logout

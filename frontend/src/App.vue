@@ -1,19 +1,24 @@
 <template>
   <UserInfo/>
-  <YouTube
-    v-if="$store.state.csrfToken"
-  videoId="dQw4w9WgXcQ"/>
+  <RoomView
+    v-if="$store.state.room"
+  ></RoomView>
+  <RoomList
+    v-else
+  />
 </template>
 
 <script>
 import UserInfo from './components/UserInfo.vue'
-import YouTube from './components/YouTube.vue'
+import RoomList from './components/RoomList.vue'
+import RoomView from './components/RoomView.vue'
 
 export default {
   name: 'App',
   components: {
     UserInfo,
-    YouTube
+    RoomList,
+    RoomView,
   }
 }
 </script>

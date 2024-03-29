@@ -1,14 +1,19 @@
 <template>
   <UserInfo/>
+  <YouTube
+    v-if="$store.state.csrfToken"
+  videoId="dQw4w9WgXcQ"/>
 </template>
 
 <script>
 import UserInfo from './components/UserInfo.vue'
+import YouTube from './components/YouTube.vue'
 
 export default {
   name: 'App',
   components: {
-    UserInfo
+    UserInfo,
+    YouTube
   }
 }
 </script>

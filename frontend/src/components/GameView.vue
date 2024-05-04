@@ -156,6 +156,8 @@ const onPlayerStateChange = (event: any) => {
     }
     if (event.data === 3) {
         console.log('Video buffering');
+        const randomSeek = Math.floor(Math.random() * 200);
+        player.seekTo(randomSeek)
         scorePaused = true;
     }
 }
@@ -170,12 +172,13 @@ watchEffect(() => {
             width: '1',
             videoId: currentVideoLink.value?.id,
                 events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
                 }
             });
         } else {
             player.loadVideoById(currentVideoLink.value?.id);
+
         }
         console.log('Player created', player);
     }

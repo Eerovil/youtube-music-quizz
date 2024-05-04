@@ -183,6 +183,7 @@ watchEffect(() => {
             });
         } else {
             player.loadVideoById(currentVideoLink.value?.id);
+            player.stopVideo();
 
         }
         console.log('Player created', player);
@@ -256,6 +257,12 @@ async function selectVideo(link: VideoLink) {
             </select>
         </div>
         <button id="start-button" @click="getRandomVideo">Start</button>
+        <p>Change log</p>
+        <ul>
+            <li>04-05-2024 Fixed songs not playing sometimes (hopefully)</li>
+            <li>04-05-2024 Fixed song counter on long game length</li>
+            <li>04-05-2024 Added difficulty and game length settings</li>
+        </ul>
     </div>
     <div id="yt-frame"></div>
     <div v-if="currentVideoLink" id="score-overlay">

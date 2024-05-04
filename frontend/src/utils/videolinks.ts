@@ -88,8 +88,6 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Dead Boy's Poem;LQZzoEHCV-w
             FantasMic;bO_UUaj-QLM
             Sleepwalker;M9fY81gSk_Y
-            Wanderlust;EbEMxgc56Zk
-            Deep Silent Complete;hrhJX2Szklc
             `
         },
         {

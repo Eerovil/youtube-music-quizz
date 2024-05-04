@@ -8,7 +8,7 @@ const { selectedVideos } = toRefs(props)
 // This component keeps track of shown items
 // On load, it will fetch all youtube links from playlist urls
 const success = ref(null as boolean | null)
-const expandedGroup = ref<string | null>(null);
+
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
 
@@ -25,6 +25,10 @@ for (const videoGroup of selectedVideos.value) {
 function getRandomVideo() {
     if (videLinksLeft.size === 0) {
         console.log('No more videos left');
+        if (elapsedTimeInterval) {
+            clearInterval(elapsedTimeInterval);
+        }
+        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better)`);
         return;
     }
     triedLinks.value.clear();
@@ -90,7 +94,6 @@ async function selectVideo(link: VideoLink) {
 
 <template>
   <div>
-    <h1>Game View</h1>
     <button v-if="!currentVideoURL" @click="getRandomVideo">Start</button>
     <iframe id="yt-frame" v-if="currentVideoURL" :src="currentVideoURL" width="1" height="1" frameborder="0" allow="autoplay *; fullscreen *" ></iframe>
     <div v-if="currentVideoURL">
@@ -100,12 +103,14 @@ async function selectVideo(link: VideoLink) {
     </div>
     <div v-if="currentVideoURL" class="choices">
         <div v-for="videoGroup in selectedVideos" :key="videoGroup.title">
-            <h2 @click="expandedGroup = videoGroup.title">{{ videoGroup.title }}</h2>
-            <ul v-if="expandedGroup == videoGroup.title">
-                <li v-for="link in videoGroup.links" :key="link.id">
-                    <button @click="selectVideo(link)" :disabled="success || triedLinks.has(link.id)">{{ link.title }}</button>
-                </li>
-            </ul>
+            <h2>{{ videoGroup.title }}</h2>
+            <div class="group-wrapper">
+                <div v-for="link in videoGroup.links" @click="selectVideo(link)" :key="link.id" class="group-item" :style="`background-image: url('${link.thumbnail}')`">
+                    <div class="thumbnail-overlay" v-if="!triedLinks.has(link.id)">
+                        <p>{{ link.title }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
   </div>
@@ -114,5 +119,45 @@ async function selectVideo(link: VideoLink) {
 <style scoped>
 #yt-frame {
     opacity: 0;
+}
+.choices {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.group-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+.group-item {
+    margin: 0.5rem;
+    height: 10vw;
+    width: 10vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.1rem;
+    overflow: hidden;
+
+    background-size: cover;
+    background-position: center;
+
+    padding: 0.5rem;
+}
+.group-item:hover {
+    cursor: pointer;
+}
+.thumbnail-overlay {
+    font-size: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
 }
 </style>

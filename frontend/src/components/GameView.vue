@@ -163,6 +163,8 @@ const onPlayerStateChange = (event: any) => {
 watchEffect(() => {
     if (currentVideoLink.value) {
         if (!player) {
+            // Disable TS2304 error
+            // @ts-ignore
             player = new YT.Player('yt-frame', {
             height: '1',
             width: '1',
@@ -264,7 +266,7 @@ async function selectVideo(link: VideoLink) {
             </div>
         </div>
     </div>
-    <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink.title }}</p></div>
+    <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink?.title }}</p></div>
     <div v-if="success === false" id="failed-overlay">Incorrect! +10</div>
   </div>
 </template>

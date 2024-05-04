@@ -76,6 +76,10 @@ watchEffect(() => {
 });
 
 async function selectVideo(link: VideoLink) {
+    if (triedLinks.value.has(link.id)) {
+        console.log('Already tried this link');
+        return;
+    }
     triedLinks.value.add(link.id);
     if (currentVideoLink.value && link.id === currentVideoLink.value.id) {
         console.log('Correct!');
@@ -98,8 +102,6 @@ async function selectVideo(link: VideoLink) {
     <iframe id="yt-frame" v-if="currentVideoURL" :src="currentVideoURL" width="1" height="1" frameborder="0" allow="autoplay *; fullscreen *" ></iframe>
     <div v-if="currentVideoURL">
         <p>Score: {{ elapsedSeconds }}</p>
-        <p v-if="success === true">Correct!</p>
-        <p v-if="success === false">Incorrect!</p>
     </div>
     <div v-if="currentVideoURL" class="choices">
         <div v-for="videoGroup in selectedVideos" :key="videoGroup.title">
@@ -113,6 +115,8 @@ async function selectVideo(link: VideoLink) {
             </div>
         </div>
     </div>
+    <div v-if="success" id="success-overlay">Correct!</div>
+    <div v-if="success === false" id="failed-overlay">Incorrect! +10 seconds</div>
   </div>
 </template>
 
@@ -146,6 +150,7 @@ async function selectVideo(link: VideoLink) {
 
     padding: 0.5rem;
 }
+
 .group-item:hover {
     cursor: pointer;
 }
@@ -159,5 +164,44 @@ async function selectVideo(link: VideoLink) {
     text-align: center;
     width: 100%;
     height: 100%;
+}
+
+@media screen and (max-width: 600px) {
+    .group-item {
+        height: 35vw;
+        width: 35vw;
+    }   
+    .thumbnail-overlay {
+        font-size: 1.2rem;
+    }
+}
+
+#success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 255, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    color: white;
+    z-index: 100;
+}
+#failed-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: rgba(255, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    color: white;
+    z-index: 100;
 }
 </style>

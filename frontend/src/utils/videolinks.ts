@@ -69,8 +69,6 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Walking In The Air;eCJrzz86IVc
             Sleeping Sun;QDLh9blnyvY
             Nightquest;06Jj4AdDdBA
-            Sleeping Sun;mpYfw2EHYGQ
-            Swanheart;Dc-0jBxCfhA
             `
         }
     ]

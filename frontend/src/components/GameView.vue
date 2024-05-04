@@ -178,11 +178,11 @@ async function selectVideo(link: VideoLink) {
 
 @media screen and (max-width: 600px) {
     .group-item {
-        height: 35vw;
-        width: 35vw;
+        height: 26vw;
+        width: 26vw;
     }   
     .thumbnail-overlay {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 }
 

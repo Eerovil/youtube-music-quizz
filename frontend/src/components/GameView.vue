@@ -18,11 +18,11 @@ const triedLinks = ref(new Set<string>());
 const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
 
-const videLinksLeft = new Set<string>();
+const videLinksLeft = ref(new Set<string>());
 const correctGuesses = ref(0);
 for (const videoGroup of selectedVideos.value) {
     for (const link of videoGroup.links) {
-        videLinksLeft.add(link.id);
+        videLinksLeft.value.add(link.id);
     }
 }
 
@@ -32,7 +32,7 @@ const songsLeft = computed(() => {
     } else if (gameLength.value == "medium") {
         return 29 - correctGuesses.value;
     } else {
-        return videLinksLeft.size;
+        return videLinksLeft.value.size;
     }
 });
 
@@ -40,7 +40,7 @@ const videoChoices = computed(() => {
     const ret = [];
     let items = 0;
     for (const videoGroup of selectedVideos.value) {
-        const links = videoGroup.links.filter(l => videLinksLeft.has(l.id) || currentVideoLink.value?.id === l.id);
+        const links = videoGroup.links.filter(l => videLinksLeft.value.has(l.id) || currentVideoLink.value?.id === l.id);
         if (links.length > 0) {
             ret.push({ title: videoGroup.title, links });
             items += links.length;
@@ -95,7 +95,7 @@ function getRandomVideo() {
         if (elapsedTimeInterval) {
             clearInterval(elapsedTimeInterval);
         }
-        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better) Difficulty: ${difficulty.value}`);
+        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better) Difficulty: ${difficulty.value}, Game length: ${gameLength.value}`);
         return;
     }
     triedLinks.value.clear();
@@ -113,9 +113,9 @@ function getRandomVideo() {
     } else {
         correctGuesses.value++;
     }
-    const randomIndex = Math.floor(Math.random() * videLinksLeft.size);
-    const randomId = Array.from(videLinksLeft)[randomIndex];
-    videLinksLeft.delete(randomId);
+    const randomIndex = Math.floor(Math.random() * videLinksLeft.value.size);
+    const randomId = Array.from(videLinksLeft.value)[randomIndex];
+    videLinksLeft.value.delete(randomId);
     currentVideoLink.value = null;
     for (const videoGroup of selectedVideos.value) {
         for (const link of videoGroup.links) {

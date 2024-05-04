@@ -8,6 +8,8 @@ const { selectedVideos } = toRefs(props)
 // This component keeps track of shown items
 // On load, it will fetch all youtube links from playlist urls
 const success = ref(null as boolean | null)
+const difficulty = ref("easy");
+const gameLength = ref("short");
 
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
@@ -16,19 +18,83 @@ const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
 
 const videLinksLeft = new Set<string>();
+const correctGuesses = ref(0);
 for (const videoGroup of selectedVideos.value) {
     for (const link of videoGroup.links) {
         videLinksLeft.add(link.id);
     }
 }
 
+const songsLeft = computed(() => {
+    if (gameLength.value == "short") {
+        return 4 - correctGuesses.value;
+    } else if (gameLength.value == "medium") {
+        return 29 - correctGuesses.value;
+    } else {
+        return videLinksLeft.size;
+    }
+});
+
+const videoChoices = computed(() => {
+    const ret = [];
+    let items = 0;
+    for (const videoGroup of selectedVideos.value) {
+        const links = videoGroup.links.filter(l => videLinksLeft.has(l.id) || currentVideoLink.value?.id === l.id);
+        if (links.length > 0) {
+            ret.push({ title: videoGroup.title, links });
+            items += links.length;
+        }
+    }
+    if (difficulty.value === "hard") {
+        return ret;
+    }
+    // First remove items from each group until there is only 3 in each group
+    for (const group of ret) {
+        while (group.links.length > 3) {
+            const randomIndex = Math.floor(Math.random() * group.links.length);
+            if (!group.links[randomIndex]) {
+                continue;
+            }
+            if (group.links[randomIndex]?.id === currentVideoLink.value?.id) {
+                continue;
+            }
+            group.links.splice(randomIndex, 1);
+            items--;
+        }
+    }
+    const toShow = difficulty.value === "easy" ? 3 : 10;
+    // Remove random items from each group until only toShow items are left
+    while (items > toShow) {
+        console.log('Removing random item', toShow, items);
+        const randomizedIndexes = Array.from({ length: ret.length }, (_, i) => i).sort(() => Math.random() - 0.5);
+        for (const index of randomizedIndexes) {
+            const group = ret[index];
+            // randomly continue to next group
+            if (items <= toShow) {
+                break;
+            }
+            const randomIndex = Math.floor(Math.random() * group.links.length);
+            if (!group.links[randomIndex]) {
+                continue;
+            }
+            if (group.links[randomIndex]?.id === currentVideoLink.value?.id) {
+                continue;
+            }
+            group.links.splice(randomIndex, 1);
+            items--;
+        }
+    }
+    // Remove empty groups
+    return ret.filter(group => group.links.length > 0);
+});
+
 function getRandomVideo() {
-    if (videLinksLeft.size === 0) {
+    if (songsLeft.value === 0) {
         console.log('No more videos left');
         if (elapsedTimeInterval) {
             clearInterval(elapsedTimeInterval);
         }
-        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better)`);
+        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better) Difficulty: ${difficulty.value}`);
         return;
     }
     triedLinks.value.clear();
@@ -40,6 +106,8 @@ function getRandomVideo() {
         elapsedTimeInterval = setInterval(() => {
             elapsedSeconds.value++;
         }, 1000);
+    } else {
+        correctGuesses.value++;
     }
     const randomIndex = Math.floor(Math.random() * videLinksLeft.size);
     const randomId = Array.from(videLinksLeft)[randomIndex];
@@ -102,14 +170,31 @@ async function selectVideo(link: VideoLink) {
         <h1>Guess the song!</h1>
         <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
         <h2>Click start to begin</h2>
+        <div class="difficulty">
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty" v-model="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="game-length">
+            <label for="game-length">Game length:</label>
+            <select id="game-length" v-model="gameLength">
+                <option value="short">Short</option>
+                <option value="medium">Medium</option>
+                <option value="long">Long</option>
+            </select>
+        </div>
         <button id="start-button" @click="getRandomVideo">Start</button>
     </div>
     <iframe id="yt-frame" v-if="currentVideoURL" :src="currentVideoURL" width="1" height="1" frameborder="0" allow="autoplay *; fullscreen *" ></iframe>
     <div v-if="currentVideoURL" id="score-overlay">
         <p>Score: {{ elapsedSeconds }}</p>
+        <p>Songs left: {{ songsLeft + 1 }}</p>
     </div>
     <div v-if="currentVideoURL" class="choices">
-        <div v-for="videoGroup in selectedVideos" :key="videoGroup.title">
+        <div v-for="videoGroup in videoChoices" :key="videoGroup.title">
             <h2>{{ videoGroup.title }}</h2>
             <div class="group-wrapper">
                 <div v-for="link in videoGroup.links.filter(l => (videLinksLeft.has(l.id)) || currentVideoLink?.id == l.id)" @click="selectVideo(link)" :key="link.id" class="group-item" :style="`background-image: url('${link.thumbnail}')`">

@@ -141,7 +141,9 @@ const onPlayerStateChange = (event: any) => {
     if (event.data === 0) {
         console.log('Video ended');
         // Restart video
-        player.seekTo(0);
+        setTimeout(() => {
+            player.seekTo(0);
+        }, 1000);
     }
     if (event.data === 1) {
         console.log('Video playing');
@@ -156,7 +158,10 @@ const onPlayerStateChange = (event: any) => {
     }
     if (event.data === 3) {
         console.log('Video buffering');
-        const randomSeek = Math.floor(Math.random() * 200);
+        // Get video length
+        console.log('Video length', player.getDuration());
+        const lastSeek = player.getDuration() - 60;
+        const randomSeek = Math.floor(Math.random() * lastSeek);
         player.seekTo(randomSeek)
         scorePaused = true;
     }

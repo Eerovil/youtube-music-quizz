@@ -62,7 +62,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Stargazers;rdF3ntssZhE;https://i.ytimg.com/vi/rdF3ntssZhE/hqdefault.jpg
             Gethsemane;5VgLLDekYcI;https://i.ytimg.com/vi/5VgLLDekYcI/hqdefault.jpg
             Devil & The Deep Dark Ocean;bJbqgoDovgQ;https://i.ytimg.com/vi/bJbqgoDovgQ/hqdefault.jpg
-            Sacrament of Wilderness [HD];G5dJeNay_XU;https://i.ytimg.com/vi/G5dJeNay_XU/hqdefault.jpg
+            Sacrament of Wilderness;G5dJeNay_XU;https://i.ytimg.com/vi/G5dJeNay_XU/hqdefault.jpg
             Passion And The Opera;gBPkkahVScc;https://i.ytimg.com/vi/Jj4j0g72nbc/hqdefault.jpg
             Swanheart;8Wb5ABApAVU;https://i.ytimg.com/vi/4J5fEZGARxg/hqdefault.jpg
             Moondance;ariULvFxwMM;https://i.ytimg.com/vi/RnOdQ5WNZJk/hqdefault.jpg
@@ -72,8 +72,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Sleeping Sun;QDLh9blnyvY;https://i.ytimg.com/vi/bJbqgoDovgQ/hqdefault.jpg
             Nightquest;06Jj4AdDdBA;https://i.ytimg.com/vi/G5dJeNay_XU/hqdefault.jpg
             Sleeping Sun;mpYfw2EHYGQ;https://i.ytimg.com/vi/gBPkkahVScc/hqdefault.jpg
-            Swanheart [HD];Dc-0jBxCfhA;https://i.ytimg.com/vi/8Wb5ABApAVU/hqdefault.jpg
-            The Pharaoh Sails To Orion [HD];_4Aewzbzfek;https://i.ytimg.com/vi/ariULvFxwMM/hqdefault.jpg
+            Swanheart;Dc-0jBxCfhA;https://i.ytimg.com/vi/8Wb5ABApAVU/hqdefault.jpg
             `
         }
     ]

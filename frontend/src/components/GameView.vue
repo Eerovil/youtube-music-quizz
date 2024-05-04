@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, toRefs, computed, watchEffect } from 'vue'
-import { ParsedVideoLinkGroup, VideoLink } from '../utils/videolinks'
+import type { ParsedVideoLinkGroup, VideoLink } from '../utils/videolinks'
 const props = defineProps<{
   selectedVideos: ParsedVideoLinkGroup[]
 }>()
@@ -71,7 +71,7 @@ const currentVideoURL = computed(() => {
 
 watchEffect(() => {
     if (currentVideoURL.value) {
-        console.log('Playing video:', currentVideoLink.value.title);
+        console.log('Playing video:', currentVideoLink.value?.title);
     }
 });
 
@@ -98,16 +98,21 @@ async function selectVideo(link: VideoLink) {
 
 <template>
   <div>
-    <button v-if="!currentVideoURL" @click="getRandomVideo">Start</button>
+    <div v-if="!currentVideoURL">
+        <h1>Guess the song!</h1>
+        <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
+        <h2>Click start to begin</h2>
+        <button id="start-button" @click="getRandomVideo">Start</button>
+    </div>
     <iframe id="yt-frame" v-if="currentVideoURL" :src="currentVideoURL" width="1" height="1" frameborder="0" allow="autoplay *; fullscreen *" ></iframe>
-    <div v-if="currentVideoURL">
+    <div v-if="currentVideoURL" id="score-overlay">
         <p>Score: {{ elapsedSeconds }}</p>
     </div>
     <div v-if="currentVideoURL" class="choices">
         <div v-for="videoGroup in selectedVideos" :key="videoGroup.title">
             <h2>{{ videoGroup.title }}</h2>
             <div class="group-wrapper">
-                <div v-for="link in videoGroup.links" @click="selectVideo(link)" :key="link.id" class="group-item" :style="`background-image: url('${link.thumbnail}')`">
+                <div v-for="link in videoGroup.links.filter(l => (videLinksLeft.has(l.id)) || currentVideoLink?.id == l.id)" @click="selectVideo(link)" :key="link.id" class="group-item" :style="`background-image: url('${link.thumbnail}')`">
                     <div class="thumbnail-overlay" v-if="!triedLinks.has(link.id)">
                         <p>{{ link.title }}</p>
                     </div>
@@ -116,11 +121,16 @@ async function selectVideo(link: VideoLink) {
         </div>
     </div>
     <div v-if="success" id="success-overlay">Correct!</div>
-    <div v-if="success === false" id="failed-overlay">Incorrect! +10 seconds</div>
+    <div v-if="success === false" id="failed-overlay">Incorrect! +10</div>
   </div>
 </template>
 
 <style scoped>
+#start-button {
+    font-size: 2rem;
+    padding: 1rem;
+    margin: 1rem;
+}
 #yt-frame {
     opacity: 0;
 }
@@ -203,5 +213,15 @@ async function selectVideo(link: VideoLink) {
     font-size: 1.5rem;
     color: white;
     z-index: 100;
+}
+#score-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    width: 100%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 </style>

@@ -2,14 +2,11 @@
 import { ref } from 'vue'
 import GameView from './GameView.vue'
 import { getAllVideoLinks } from '../utils/videolinks'
-
-interface Playlist {
-  title: string
-  url: string
-}
+// must be imported using a type-only import
+import type { ParsedVideoLinkGroup } from '../utils/videolinks'
 
 // defined data: selectedVideos
-const selectedVideos = ref<Playlist[]>([])
+const selectedVideos = ref<ParsedVideoLinkGroup[]>([])
 selectedVideos.value = getAllVideoLinks('nightwish') 
 
 </script>

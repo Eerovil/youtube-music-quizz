@@ -10,6 +10,7 @@ const { selectedVideos } = toRefs(props)
 const success = ref(null as boolean | null)
 const difficulty = ref("easy");
 const gameLength = ref("short");
+let scorePaused = true;
 
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
@@ -104,6 +105,9 @@ function getRandomVideo() {
             clearInterval(elapsedTimeInterval);
         }
         elapsedTimeInterval = setInterval(() => {
+            if (scorePaused) {
+                return;
+            }
             elapsedSeconds.value++;
         }, 1000);
     } else {
@@ -126,22 +130,75 @@ function getRandomVideo() {
     }
 }
 
-const currentVideoURL = computed(() => {
-    const videoId = currentVideoLink.value?.id;
-    if (!videoId) {
-        return '';
+let player: any = null;
+const onPlayerReady = (event: any) => {
+    console.log('Player ready', event);
+    // play
+    event.target.playVideo();
+}
+const onPlayerStateChange = (event: any) => {
+    console.log('Player state change', event);
+    if (event.data === 0) {
+        console.log('Video ended');
+        // Restart video
+        player.seekTo(0);
     }
-    // create random start time between 0 and 200 seconds
-    const startTime = Math.floor(Math.random() * 200);
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&loop=1`;
-});
-
+    if (event.data === 1) {
+        console.log('Video playing');
+        success.value = null;
+        // Unpause score counter
+        scorePaused = false;
+    }
+    if (event.data === 2) {
+        console.log('Video paused');
+        // Pause score counter
+        scorePaused = true;
+    }
+    if (event.data === 3) {
+        console.log('Video buffering');
+        scorePaused = true;
+    }
+}
 
 watchEffect(() => {
-    if (currentVideoURL.value) {
-        console.log('Playing video:', currentVideoLink.value?.title);
+    if (currentVideoLink.value) {
+        if (!player) {
+            player = new YT.Player('yt-frame', {
+            height: '1',
+            width: '1',
+            videoId: currentVideoLink.value?.id,
+                events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+                }
+            });
+        } else {
+            player.loadVideoById(currentVideoLink.value?.id);
+        }
+        console.log('Player created', player);
     }
 });
+
+// const currentVideoLink = computed(() => {
+//     const videoId = currentVideoLink.value?.id;
+//     if (!videoId) {
+//         return '';
+//     }
+//     // create random start time between 0 and 200 seconds
+//     const startTime = Math.floor(Math.random() * 200);
+//     return `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&loop=1&enablejsapi=1`;
+// });
+
+
+// watchEffect(() => {
+//     if (currentVideoLink.value) {
+//         console.log('Playing video:', currentVideoLink.value?.title, 'player', player);
+//         setInterval(() => {
+//             console.log('Setting video', currentVideoLink.value?.id);
+//             player.loadVideoById(currentVideoLink.value?.id);
+//         }, 1000);
+//     }
+// });
 
 async function selectVideo(link: VideoLink) {
     if (triedLinks.value.has(link.id)) {
@@ -152,7 +209,8 @@ async function selectVideo(link: VideoLink) {
     if (currentVideoLink.value && link.id === currentVideoLink.value.id) {
         console.log('Correct!');
         success.value = true;
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        scorePaused = true;
+        await new Promise(resolve => setTimeout(resolve, 1000));
         success.value = null;
         getRandomVideo();
     } else {
@@ -162,11 +220,12 @@ async function selectVideo(link: VideoLink) {
     }
 }
 
+
 </script>
 
 <template>
   <div>
-    <div v-if="!currentVideoURL">
+    <div v-if="!currentVideoLink">
         <h1>Guess the song!</h1>
         <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
         <h2>Click start to begin</h2>
@@ -188,12 +247,12 @@ async function selectVideo(link: VideoLink) {
         </div>
         <button id="start-button" @click="getRandomVideo">Start</button>
     </div>
-    <iframe id="yt-frame" v-if="currentVideoURL" :src="currentVideoURL" width="1" height="1" frameborder="0" allow="autoplay *; fullscreen *" ></iframe>
-    <div v-if="currentVideoURL" id="score-overlay">
+    <div id="yt-frame"></div>
+    <div v-if="currentVideoLink" id="score-overlay">
         <p>Score: {{ elapsedSeconds }}</p>
         <p>Songs left: {{ songsLeft + 1 }}</p>
     </div>
-    <div v-if="currentVideoURL" class="choices">
+    <div v-if="currentVideoLink" class="choices">
         <div v-for="videoGroup in videoChoices" :key="videoGroup.title">
             <h2>{{ videoGroup.title }}</h2>
             <div class="group-wrapper">
@@ -205,7 +264,7 @@ async function selectVideo(link: VideoLink) {
             </div>
         </div>
     </div>
-    <div v-if="success" id="success-overlay">Correct!</div>
+    <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink.title }}</p></div>
     <div v-if="success === false" id="failed-overlay">Incorrect! +10</div>
   </div>
 </template>
@@ -284,6 +343,8 @@ async function selectVideo(link: VideoLink) {
     font-size: 3rem;
     color: white;
     z-index: 100;
+    flex-direction: column;
+    text-align: center;
 }
 #failed-overlay {
     position: fixed;

@@ -103,6 +103,8 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Feel for You;0TekrprUeX4
             Phantom of the Opera;wPj7N8oNA0g
             Beauty of the Beast;kKR8uc9QtIQ
+            The Wayfarer;c_JU0ke5ZyY
+            Lagoon;ClI6njdGJjE
             `
         },
         {
@@ -120,6 +122,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Kuolema Tekee Taiteilijan;O8EuSKJalqI
             Higher than Hope;EkcRFT_qDVI
             White night Fantasy;EuWPAlawko0
+            Live to Tell the Tale;YupcxzLbBz8
             `
         },
         {
@@ -138,6 +141,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             7 Days to the Wolves;aKeL83LFUSo
             Meadows of Heaven;AY9VI2B71bk
             Escapist;eKuCFk1j_Io
+            While Your Lips Are Still Red;Kmiw4FYTg2U
             `
         },
         {
@@ -156,6 +160,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Last Ride Of The Day;EYnZxMT-UOk
             Song Of Myself;SLIX1nVoam4
             Imaginaerum;7xB4nlZ-Vus
+            The Heart Asks Pleasure First;4RVmGpImbdk
             `
         },
         {
@@ -172,6 +177,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Alpenglow ;N2_ETb-63oo
             The Eyes Of Sharbat Gula;wGWmgBcd3nY
             The Greatest Show on Earth;n499M4pgc5o
+            Sagan;1rT38pHbZl0
             `
         },
         {

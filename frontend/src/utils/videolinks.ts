@@ -85,7 +85,14 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Dead Boy's Poem;LQZzoEHCV-w
             FantasMic;bO_UUaj-QLM
             Sleepwalker;M9fY81gSk_Y
-            Over The Hills And Far Away;H4lxlLbEZrs
+            `
+        },
+        {
+            title: "Over The Hills And Far Away EP",
+            data: `
+            Over The Hills And Far Away;4CFORwwrExM
+            10th Man Down;flj6AKoWE3k
+            Away;Hg84k2CNNas
             `
         },
         {

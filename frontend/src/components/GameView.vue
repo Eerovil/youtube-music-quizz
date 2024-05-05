@@ -15,6 +15,7 @@ const gameStarted = ref(false);
 
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
+const buffering = ref(false);
 
 const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
@@ -149,6 +150,7 @@ const onPlayerStateChange = (event: any) => {
         }, 1000);
     }
     if (event.data === 1) {
+        buffering.value = false;
         console.log('Video playing');
         success.value = null;
         // Unpause score counter
@@ -160,6 +162,7 @@ const onPlayerStateChange = (event: any) => {
         scorePaused.value = true;
     }
     if (event.data === 3) {
+        buffering.value = true;
         console.log('Video buffering');
         // Get video length
         console.log('Video length', player.getDuration());
@@ -261,6 +264,7 @@ async function selectVideo(link: VideoLink) {
             <p>Score: {{ elapsedSeconds }}</p>
             <p>Songs left: {{ songsLeft + 1 }}</p>
         </div>
+        <span v-if="buffering">Buffering...</span>
         <div style="display: flex; flex-direction: column;">
             <span style="font-size: 10px">Controls:</span>
             <div id="yt-wrapper">

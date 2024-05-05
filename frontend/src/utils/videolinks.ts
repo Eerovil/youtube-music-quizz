@@ -48,10 +48,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Tutankhamen;FNjRfjJEF20
             Nymphomaniac Fantasia;5F3ZK52HzZg
             Know Why The Nightingale Sings;0mEGX4z6BZk
-            Lappi, Pt. I Erämaajärvi;VwYeRnlp4y4
-            Lappi, Pt. II Witchdrums;zLgJZqvw2OM
-            Lappi, Pt. III This Moment Is Eternity;6UCzlNiSx64
-            Lappi, Pt. IV Etiäinen;_HzoUpTq77s
+            Lappi;FN04hmGUDbI
             Return To The Sea;3zFmsW078aI
             Once Upon A Troubadour;UW68klXvnBk
             `
@@ -192,14 +189,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Procession;OZBpu67tbS0
             Tribal;s0bG2ce5blo
             Endlessness;DLFI7Cs7qmk
-            All the works... Vista;_EagLsFGJIE
-            All the works... The Blue;Cepe4Q6d8Cg
-            All the works... The Green;vb7SZfO98C0
-            All the works... Moors;b8HM7vzU5rw
-            All the works... Aurorae;rVryEboMof8
-            All the works... Quiet as the Snow;ljLNVVktYB4
-            All the works... Anthropocene;Gx-BnTqGq5Y
-            All the works... Ad Astra;CiojddlKcAE
+            All The Works...;RnOdQ5WNZJk
             `
         }
     ]

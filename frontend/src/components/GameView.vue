@@ -10,7 +10,8 @@ const { selectedVideos } = toRefs(props)
 const success = ref(null as boolean | null)
 const difficulty = ref("easy");
 const gameLength = ref("short");
-let scorePaused = true;
+let scorePaused = ref(true);
+const gameStarted = ref(false);
 
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
@@ -90,12 +91,14 @@ const videoChoices = computed(() => {
 });
 
 function getRandomVideo() {
+    gameStarted.value = true;
     if (songsLeft.value === 0) {
         console.log('No more videos left');
         if (elapsedTimeInterval) {
             clearInterval(elapsedTimeInterval);
         }
         alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better) Difficulty: ${difficulty.value}, Game length: ${gameLength.value}`);
+        window.location.reload();
         return;
     }
     triedLinks.value.clear();
@@ -105,7 +108,7 @@ function getRandomVideo() {
             clearInterval(elapsedTimeInterval);
         }
         elapsedTimeInterval = setInterval(() => {
-            if (scorePaused) {
+            if (scorePaused.value) {
                 return;
             }
             elapsedSeconds.value++;
@@ -149,12 +152,12 @@ const onPlayerStateChange = (event: any) => {
         console.log('Video playing');
         success.value = null;
         // Unpause score counter
-        scorePaused = false;
+        scorePaused.value = false;
     }
     if (event.data === 2) {
         console.log('Video paused');
         // Pause score counter
-        scorePaused = true;
+        scorePaused.value = true;
     }
     if (event.data === 3) {
         console.log('Video buffering');
@@ -163,7 +166,7 @@ const onPlayerStateChange = (event: any) => {
         const lastSeek = player.getDuration() - 60;
         const randomSeek = Math.floor(Math.random() * lastSeek);
         player.seekTo(randomSeek)
-        scorePaused = true;
+        scorePaused.value = true;
     }
 }
 
@@ -173,8 +176,19 @@ watchEffect(() => {
             // Disable TS2304 error
             // @ts-ignore
             player = new YT.Player('yt-frame', {
-            height: '1',
-            width: '1',
+            height: '1500',
+            width: '500',
+            playerVars: {
+                controls: 1,
+                disablekb: 1,
+                enablejsapi: 1,
+                fs: 0,
+                iv_load_policy: 3,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
+                playsinline: 1,
+            },
             videoId: currentVideoLink.value?.id,
                 events: {
                     'onReady': onPlayerReady,
@@ -190,27 +204,6 @@ watchEffect(() => {
     }
 });
 
-// const currentVideoLink = computed(() => {
-//     const videoId = currentVideoLink.value?.id;
-//     if (!videoId) {
-//         return '';
-//     }
-//     // create random start time between 0 and 200 seconds
-//     const startTime = Math.floor(Math.random() * 200);
-//     return `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&loop=1&enablejsapi=1`;
-// });
-
-
-// watchEffect(() => {
-//     if (currentVideoLink.value) {
-//         console.log('Playing video:', currentVideoLink.value?.title, 'player', player);
-//         setInterval(() => {
-//             console.log('Setting video', currentVideoLink.value?.id);
-//             player.loadVideoById(currentVideoLink.value?.id);
-//         }, 1000);
-//     }
-// });
-
 async function selectVideo(link: VideoLink) {
     if (triedLinks.value.has(link.id)) {
         console.log('Already tried this link');
@@ -220,7 +213,7 @@ async function selectVideo(link: VideoLink) {
     if (currentVideoLink.value && link.id === currentVideoLink.value.id) {
         console.log('Correct!');
         success.value = true;
-        scorePaused = true;
+        scorePaused.value = true;
         await new Promise(resolve => setTimeout(resolve, 1000));
         success.value = null;
         getRandomVideo();
@@ -231,12 +224,11 @@ async function selectVideo(link: VideoLink) {
     }
 }
 
-
 </script>
 
 <template>
   <div>
-    <div v-if="!currentVideoLink">
+    <div v-if="!currentVideoLink" id="start-game">
         <h1>Guess the song!</h1>
         <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
         <h2>Click start to begin</h2>
@@ -264,10 +256,17 @@ async function selectVideo(link: VideoLink) {
             <li>04-05-2024 Added difficulty and game length settings</li>
         </ul>
     </div>
-    <div id="yt-frame"></div>
-    <div v-if="currentVideoLink" id="score-overlay">
-        <p>Score: {{ elapsedSeconds }}</p>
-        <p>Songs left: {{ songsLeft + 1 }}</p>
+    <div id="score-overlay" :class="{'scorehidden': !currentVideoLink}">
+        <div>
+            <p>Score: {{ elapsedSeconds }}</p>
+            <p>Songs left: {{ songsLeft + 1 }}</p>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+            <span style="font-size: 10px">Controls:</span>
+            <div id="yt-wrapper">
+                <div id="yt-frame"></div>
+            </div>
+        </div>
     </div>
     <div v-if="currentVideoLink" class="choices">
         <div v-for="videoGroup in videoChoices" :key="videoGroup.title">
@@ -292,8 +291,22 @@ async function selectVideo(link: VideoLink) {
     padding: 1rem;
     margin: 1rem;
 }
-#yt-frame {
-    opacity: 0;
+#yt-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 30px;
+    overflow: hidden;
+
+    border: 1px solid grey;
+}
+#yt-wrapper * {
+    opacity: 1;
+    position: absolute;
+    bottom: -6px;
+    left: -20px;
 }
 .choices {
     display: flex;
@@ -301,10 +314,13 @@ async function selectVideo(link: VideoLink) {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin-top: 3rem;
 }
 .group-wrapper {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 .group-item {
     margin: 0.5rem;
@@ -386,5 +402,11 @@ async function selectVideo(link: VideoLink) {
     width: 100%;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    justify-content: space-between;
+}
+#score-overlay.scorehidden {
+    top: -900px;
 }
 </style>

@@ -78,9 +78,9 @@ const songsLeft = computed(() => {
         // if (window.location.host.includes('local') && correctGuesses.value > 0) {
         //     return 0;
         // }
-        return 4 - correctGuesses.value;
+        return 5 - correctGuesses.value;
     } else if (gameLength.value == "medium") {
-        return 29 - correctGuesses.value;
+        return 30 - correctGuesses.value;
     } else {
         return videLinksLeft.value.size;
     }
@@ -382,7 +382,7 @@ function shareResult() {
     <div id="score-overlay" :class="{'scorehidden': !currentVideoLink}">
         <div>
             <p>Score: {{ elapsedSeconds }}</p>
-            <p>Songs left: {{ songsLeft + 1 }}</p>
+            <p>Songs left: {{ songsLeft }}</p>
         </div>
         <span v-if="buffering">Buffering...</span>
         <div style="display: flex; flex-direction: column;">

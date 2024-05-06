@@ -10,6 +10,23 @@ const { selectedVideos } = toRefs(props)
 const success = ref(null as boolean | null)
 const difficulty = ref("easy");
 const gameLength = ref("short");
+const playerVolume = ref(100);
+
+if (localStorage.getItem('difficulty')) {
+    difficulty.value = localStorage.getItem('difficulty') as string;
+}
+if (localStorage.getItem('gameLength')) {
+    gameLength.value = localStorage.getItem('gameLength') as string;
+}
+if (localStorage.getItem('volume')) {
+    playerVolume.value = parseInt(localStorage.getItem('volume') as string);
+}
+watchEffect(() => {
+    localStorage.setItem('difficulty', difficulty.value);
+    localStorage.setItem('gameLength', gameLength.value);
+    localStorage.setItem('volume', playerVolume.value.toString());
+});
+
 let scorePaused = ref(true);
 const gameStarted = ref(false);
 
@@ -17,7 +34,7 @@ const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
 const buffering = ref(false);
 const bufferingStart = ref(0);
-const playerVolume = ref(100);
+const wrongGuesses = ref(0);
 
 const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
@@ -50,7 +67,7 @@ const videoChoices = computed(() => {
             items += links.length;
         }
     }
-    if (difficulty.value === "hard") {
+    if (["hard", "expert"].includes(difficulty.value)) {
         return ret;
     }
     // First remove items from each group until there is only 3 in each group
@@ -94,6 +111,7 @@ const videoChoices = computed(() => {
 });
 
 function getRandomVideo() {
+    wrongGuesses.value = 0;
     gameStarted.value = true;
     if (songsLeft.value === 0) {
         console.log('No more videos left');
@@ -147,6 +165,9 @@ watchEffect(() => {
 
 const onPlayerReady = (event: any) => {
     console.log('Player ready', event);
+    if (playerVolume.value) {
+        player.setVolume(playerVolume.value);
+    }
     // play
     event.target.playVideo();
 }
@@ -250,6 +271,11 @@ async function selectVideo(link: VideoLink) {
         console.log('Incorrect! Added 10 to score.');
         elapsedSeconds.value += 10;
         success.value = false;
+        wrongGuesses.value++;
+        if (difficulty.value == 'expert' && wrongGuesses.value >= 3) {
+            alert(`Too many wrong guesses! Game over! You got to song ${correctGuesses.value + 1} Score: ${difficulty.value}, Game length: ${gameLength.value}`);
+            window.location.reload();
+        }
     }
 }
 
@@ -267,6 +293,7 @@ async function selectVideo(link: VideoLink) {
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
+                <option value="expert">Expert</option>
             </select>
         </div>
         <div class="game-length">
@@ -315,7 +342,7 @@ async function selectVideo(link: VideoLink) {
         </div>
     </div>
     <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink?.title }}</p></div>
-    <div v-if="success === false" id="failed-overlay">Incorrect! +10</div>
+    <div v-if="success === false" id="failed-overlay">Incorrect! +10<span v-if="difficulty == 'expert'" style="margin-left: 0.5rem;">({{ 3 - wrongGuesses }} guess{{ ((3 - wrongGuesses) > 1) ? 'es' : '' }} left)</span></div>
   </div>
 </template>
 

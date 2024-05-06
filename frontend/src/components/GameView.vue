@@ -16,6 +16,7 @@ const gameStarted = ref(false);
 const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
 const buffering = ref(false);
+const bufferingStart = ref(0);
 
 const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
@@ -163,6 +164,7 @@ const onPlayerStateChange = (event: any) => {
     }
     if (event.data === 3) {
         buffering.value = true;
+        bufferingStart.value = Date.now();
         console.log('Video buffering');
         // Get video length
         console.log('Video length', player.getDuration());
@@ -173,9 +175,24 @@ const onPlayerStateChange = (event: any) => {
     }
 }
 
+setInterval(() => {
+    const bufferingTime = Date.now() - bufferingStart.value;
+    if (player && buffering.value && bufferingTime > 10000) {
+        bufferingStart.value = Date.now();
+        console.log('Buffering for too long, retrying', buffering.value, bufferingTime, bufferingStart.value);
+        player.stopVideo();
+        player.loadVideoById("");
+        setTimeout(() => {
+            player.loadVideoById(currentVideoLink.value?.id);
+        }, 1000);
+    }
+}, 1000)
+
 watchEffect(() => {
     if (currentVideoLink.value) {
         if (!player) {
+            buffering.value = true;
+            bufferingStart.value = Date.now();
             // Disable TS2304 error
             // @ts-ignore
             player = new YT.Player('yt-frame', {

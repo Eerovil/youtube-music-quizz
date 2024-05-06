@@ -271,6 +271,7 @@ async function selectVideo(link: VideoLink) {
         <button id="start-button" @click="getRandomVideo">Start</button>
         <p>Change log</p>
         <ul>
+            <li>06-05-2024 Added retry after 10 seconds of buffering</li>
             <li>05-05-2024 Added missing songs. Edited Lappi and All the works... to one song</li>
             <li>05-05-2024 Added visible player (maybe it now works on iOS)</li>
             <li>04-05-2024 Fixed songs not playing sometimes (hopefully)</li>

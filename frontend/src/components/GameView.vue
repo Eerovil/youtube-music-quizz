@@ -322,6 +322,11 @@ function capitalizeFirstLetter(string: string) {
 }
 
 function reloadWindow() {
+    if (!endScreenText.value) {
+        if (!confirm('Are you sure you want to quit?')) {
+            return;
+        }
+    }
     window.location.reload();
 }
 
@@ -443,7 +448,7 @@ function shareResult() {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-top: 3rem;
+    margin-top: 5rem;
 }
 .group-wrapper {
     display: flex;
@@ -489,6 +494,9 @@ function shareResult() {
     }   
     .thumbnail-overlay {
         font-size: 1rem;
+    }
+    #end-overlay {
+        font-size: 2rem !important;
     }
 }
 

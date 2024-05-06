@@ -11,6 +11,9 @@ const success = ref(null as boolean | null)
 const difficulty = ref("easy");
 const gameLength = ref("short");
 const playerVolume = ref(100);
+const endScreenText = ref("");
+const gameStats = ref([]);
+const badEnding = ref(false);
 
 if (localStorage.getItem('difficulty')) {
     difficulty.value = localStorage.getItem('difficulty') as string;
@@ -72,6 +75,9 @@ for (const videoGroup of selectedVideos.value) {
 
 const songsLeft = computed(() => {
     if (gameLength.value == "short") {
+        // if (window.location.host.includes('local') && correctGuesses.value > 0) {
+        //     return 0;
+        // }
         return 4 - correctGuesses.value;
     } else if (gameLength.value == "medium") {
         return 29 - correctGuesses.value;
@@ -134,17 +140,7 @@ const videoChoices = computed(() => {
 });
 
 function getRandomVideo() {
-    wrongGuesses.value = 0;
     gameStarted.value = true;
-    if (songsLeft.value === 0) {
-        console.log('No more videos left');
-        if (elapsedTimeInterval) {
-            clearInterval(elapsedTimeInterval);
-        }
-        alert(`Game over! Your score is ${elapsedSeconds.value} (smaller is better) Difficulty: ${difficulty.value}, Game length: ${gameLength.value}`);
-        window.location.reload();
-        return;
-    }
     triedLinks.value.clear();
     if (!currentVideoLink.value) {
         elapsedSeconds.value = 0;
@@ -159,7 +155,21 @@ function getRandomVideo() {
         }, 1000);
     } else {
         correctGuesses.value++;
+        gameStats.value.push({ title: currentVideoLink.value.title, time: elapsedSeconds.value, wrongGuesses: wrongGuesses.value});
     }
+    wrongGuesses.value = 0;
+
+    if (songsLeft.value === 0) {
+        console.log('No more videos left');
+        if (elapsedTimeInterval) {
+            clearInterval(elapsedTimeInterval);
+        }
+        const totalWrongGuesses = gameStats.value.reduce((acc, val) => acc + val.wrongGuesses, 0);
+        scorePaused.value = true;
+        endScreenText.value = `You guessed ${correctGuesses.value} songs with only ${totalWrongGuesses} wrong guesses!`;
+        return;
+    }
+
     const randomIndex = Math.floor(Math.random() * videLinksLeft.value.size);
     const randomId = Array.from(videLinksLeft.value)[randomIndex];
     videLinksLeft.value.delete(randomId);
@@ -278,6 +288,10 @@ watchEffect(() => {
 });
 
 async function selectVideo(link: VideoLink) {
+    if (buffering.value) {
+        console.log('Buffering, not accepting clicks');
+        return;
+    }
     if (triedLinks.value.has(link.id)) {
         console.log('Already tried this link');
         return;
@@ -296,10 +310,35 @@ async function selectVideo(link: VideoLink) {
         success.value = false;
         wrongGuesses.value++;
         if (difficulty.value == 'expert' && wrongGuesses.value >= 3) {
-            alert(`Too many wrong guesses! Game over! You got to song ${correctGuesses.value + 1} Score: ${difficulty.value}, Game length: ${gameLength.value}`);
-            window.location.reload();
+            badEnding.value = true;
+            scorePaused.value = true;
+            endScreenText.value = `Too many wrong guesses! Game over! You got to song ${correctGuesses.value + 1}, Game length: ${gameLength.value}`;
         }
     }
+}
+
+function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function reloadWindow() {
+    window.location.reload();
+}
+
+function showShareButton() {
+    if (navigator.share) {
+        return true;
+    }
+    return false;
+
+}
+
+function shareResult() {
+    navigator.share({
+        title: document.title,
+        url: new URL(location.pathname, location.origin).href,
+        text: `I guessed ${correctGuesses.value} songs with only ${gameStats.value.reduce((acc, val) => acc + val.wrongGuesses, 0)} wrong guesses!`
+    });
 }
 
 </script>
@@ -350,7 +389,7 @@ async function selectVideo(link: VideoLink) {
     </div>
     <div v-if="currentVideoLink" class="choices">
         <div v-for="videoGroup in videoChoices" :key="videoGroup.title">
-            <h2>{{ videoGroup.title }}</h2>
+            <h2 style="text-align: center;">{{ videoGroup.title }}</h2>
             <div class="group-wrapper">
                 <div v-for="link in videoGroup.links.filter(l => (videLinksLeft.has(l.id)) || currentVideoLink?.id == l.id)" @click="selectVideo(link)" :key="link.id" class="group-item" :style="`background-image: url('${link.thumbnail}')`">
                     <div class="thumbnail-overlay" v-if="!triedLinks.has(link.id)">
@@ -362,6 +401,14 @@ async function selectVideo(link: VideoLink) {
     </div>
     <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink?.title }}</p></div>
     <div v-if="success === false" id="failed-overlay">Incorrect! +10<span v-if="difficulty == 'expert'" style="margin-left: 0.5rem;">({{ 3 - wrongGuesses }} guess{{ ((3 - wrongGuesses) > 1) ? 'es' : '' }} left)</span></div>
+    <div v-if="endScreenText" id="end-overlay" :class="{'bad-ending': badEnding}">
+        <p v-if="!badEnding">Finished!</p>
+        <p>{{ endScreenText }}</p>
+        <p>Score: {{ elapsedSeconds }} (smaller is better)</p>
+        <p>Difficulty: {{ capitalizeFirstLetter(difficulty) }}, Game length: {{ capitalizeFirstLetter(gameLength) }}</p>
+        <button class="big-button" @click="reloadWindow">Restart</button>
+        <button class="big-button" v-if="showShareButton()" @click="shareResult">Share</button>
+    </div>
   </div>
 </template>
 
@@ -415,7 +462,6 @@ async function selectVideo(link: VideoLink) {
     background-size: cover;
     background-position: center;
 
-    padding: 0.5rem;
 }
 
 .group-item:hover {
@@ -423,7 +469,7 @@ async function selectVideo(link: VideoLink) {
 }
 .thumbnail-overlay {
     font-size: 1.5rem;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     color: white;
     display: flex;
     justify-content: center;
@@ -431,6 +477,7 @@ async function selectVideo(link: VideoLink) {
     text-align: center;
     width: 100%;
     height: 100%;
+    padding: 0.5rem;
 }
 
 @media screen and (max-width: 600px) {
@@ -443,13 +490,13 @@ async function selectVideo(link: VideoLink) {
     }
 }
 
-#success-overlay {
+#success-overlay, #end-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 255, 0, 0.5);
+    background-color: rgba(24, 79, 36, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -458,6 +505,12 @@ async function selectVideo(link: VideoLink) {
     z-index: 100;
     flex-direction: column;
     text-align: center;
+}
+#end-overlay {
+    background-color: rgba(2, 39, 0, 0.8);
+}
+#end-overlay.bad-ending {
+    background-color: rgba(39, 0, 0, 0.8);
 }
 #failed-overlay {
     position: fixed;
@@ -502,5 +555,10 @@ async function selectVideo(link: VideoLink) {
 .difficulty > button, .game-length > button {
     flex-grow: 1;
     height: 3rem;
+}
+.big-button {
+    font-size: 2rem;
+    padding: 1rem;
+    margin: 1rem;
 }
 </style>

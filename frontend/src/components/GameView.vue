@@ -17,6 +17,7 @@ const currentVideoLink = ref<VideoLink | null>(null);
 const triedLinks = ref(new Set<string>());
 const buffering = ref(false);
 const bufferingStart = ref(0);
+const playerVolume = ref(100);
 
 const elapsedSeconds = ref(0);
 let elapsedTimeInterval = null as number | null;
@@ -136,6 +137,14 @@ function getRandomVideo() {
 }
 
 let player: any = null;
+
+watchEffect(() => {
+    console.log('Setting volume', playerVolume.value);
+    if (player) {
+        player.setVolume(playerVolume.value);
+    }
+});
+
 const onPlayerReady = (event: any) => {
     console.log('Player ready', event);
     // play
@@ -286,10 +295,11 @@ async function selectVideo(link: VideoLink) {
         </div>
         <span v-if="buffering">Buffering...</span>
         <div style="display: flex; flex-direction: column;">
-            <span style="font-size: 10px">Controls:</span>
+            <span style="font-size: 10px">Controls (click to show):</span>
             <div id="yt-wrapper">
                 <div id="yt-frame"></div>
             </div>
+            <input id="volume-slider" type="range" min="0" max="100" step="1" v-model="playerVolume" />
         </div>
     </div>
     <div v-if="currentVideoLink" class="choices">

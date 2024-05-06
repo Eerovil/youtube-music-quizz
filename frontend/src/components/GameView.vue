@@ -27,6 +27,29 @@ watchEffect(() => {
     localStorage.setItem('volume', playerVolume.value.toString());
 });
 
+const difficultyInfo = computed(() => {
+    if (difficulty.value === 'easy') {
+        return 'Easy: 3 Choices to choose from';
+    } else if (difficulty.value === 'medium') {
+        return 'Medium: 10 Choices to choose from';
+    } else if (difficulty.value === 'hard') {
+        return 'Hard: Choose from all available songs';
+    } else if (difficulty.value === 'expert') {
+        return 'Expert: 3 wrong guesses and you are out!';
+    }
+    return 'Select difficulty';
+});
+const gameLengthInfo = computed(() => {
+    if (gameLength.value === 'short') {
+        return 'Short: 5 songs';
+    } else if (gameLength.value === 'medium') {
+        return 'Medium: 30 songs';
+    } else if (gameLength.value === 'long') {
+        return 'Long: All songs';
+    }
+    return 'Select game length';
+});
+
 let scorePaused = ref(true);
 const gameStarted = ref(false);
 
@@ -286,23 +309,18 @@ async function selectVideo(link: VideoLink) {
     <div v-if="!currentVideoLink" id="start-game">
         <h1>Guess the song!</h1>
         <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
-        <h2>Click start to begin</h2>
+        <p>{{ difficultyInfo }}</p>
         <div class="difficulty">
-            <label for="difficulty">Difficulty:</label>
-            <select id="difficulty" v-model="difficulty">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="expert">Expert</option>
-            </select>
+            <button @click="difficulty = 'easy'" :disabled="difficulty == 'easy'">Easy</button>
+            <button @click="difficulty = 'medium'" :disabled="difficulty == 'medium'">Medium</button>
+            <button @click="difficulty = 'hard'" :disabled="difficulty == 'hard'">Hard</button>
+            <button @click="difficulty = 'expert'" :disabled="difficulty == 'expert'">Expert</button>
         </div>
+        <p>{{ gameLengthInfo }}</p>
         <div class="game-length">
-            <label for="game-length">Game length:</label>
-            <select id="game-length" v-model="gameLength">
-                <option value="short">Short</option>
-                <option value="medium">Medium</option>
-                <option value="long">Long</option>
-            </select>
+            <button @click="gameLength = 'short'" :disabled="gameLength == 'short'">Short</button>
+            <button @click="gameLength = 'medium'" :disabled="gameLength == 'medium'">Medium</button>
+            <button @click="gameLength = 'long'" :disabled="gameLength == 'long'">Long</button>
         </div>
         <button id="start-button" @click="getRandomVideo">Start</button>
         <p>Change log</p>
@@ -470,5 +488,19 @@ async function selectVideo(link: VideoLink) {
 }
 #score-overlay.scorehidden {
     top: -900px;
+}
+#start-game {
+    max-width: 520px;
+}
+.difficulty, .game-length {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.difficulty > button, .game-length > button {
+    flex-grow: 1;
+    height: 3rem;
 }
 </style>

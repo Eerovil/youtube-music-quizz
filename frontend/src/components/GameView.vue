@@ -12,7 +12,7 @@ const difficulty = ref("easy");
 const gameLength = ref("short");
 const playerVolume = ref(100);
 const endScreenText = ref("");
-const gameStats = ref([]);
+const gameStats = ref([] as {title: string, time: number, wrongGuesses: number}[]);
 const badEnding = ref(false);
 
 if (localStorage.getItem('difficulty')) {
@@ -326,6 +326,7 @@ function reloadWindow() {
 }
 
 function showShareButton() {
+      // @ts-ignore
     if (navigator.share) {
         return true;
     }
@@ -399,6 +400,7 @@ function shareResult() {
             </div>
         </div>
     </div>
+    <button class="big-button" @click="reloadWindow">Quit</button>
     <div v-if="success" id="success-overlay"><p>Correct!</p><p>{{ currentVideoLink?.title }}</p></div>
     <div v-if="success === false" id="failed-overlay">Incorrect! +10<span v-if="difficulty == 'expert'" style="margin-left: 0.5rem;">({{ 3 - wrongGuesses }} guess{{ ((3 - wrongGuesses) > 1) ? 'es' : '' }} left)</span></div>
     <div v-if="endScreenText" id="end-overlay" :class="{'bad-ending': badEnding}">
@@ -560,5 +562,8 @@ function shareResult() {
     font-size: 2rem;
     padding: 1rem;
     margin: 1rem;
+}
+html, body {
+  overscroll-behavior: none;
 }
 </style>

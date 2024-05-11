@@ -21,6 +21,18 @@ if (fs.existsSync(`${artistName}.json`)) {
         }
     }
     fs.writeFileSync(`${artistName}.json`, JSON.stringify(songs));
+    // Parse to a smaller object
+    const allArtists = JSON.parse(fs.readFileSync("db.json", "utf8"));
+    allArtists[artistName] = {}
+    for (const albumName in songs) {
+        allArtists[artistName][albumName] = songs[albumName].map(song => {
+            return {
+                title: song.title,
+                youtube: song.youtube
+            }
+        });
+    }
+    fs.writeFileSync("db.json", JSON.stringify(allArtists));
 } else {
     getArtist(artistName).then((songs) => {
         // Write the songs to a file called artistName.json

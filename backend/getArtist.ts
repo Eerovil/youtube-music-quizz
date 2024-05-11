@@ -108,7 +108,7 @@ export const getArtist = async (artistName: string) => {
             if (!artistGood) {
                 continue;
             }
-            if (track.type_ === 'track') {
+            if (track.type_ === 'track' || track.type_ === 'index') {
                 releaseSongs.push(track);
                 console.log(`Found song`, track);
             }

@@ -116,5 +116,6 @@ export const getArtist = async (artistName: string) => {
         songs[releaseData.data.title] = releaseSongs;
     }
     console.log("songs", songs);
+    return songs;
 };
 

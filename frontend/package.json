@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite --port 3011",
     "build": "run-p type-check \"build-only {@}\" -- && rm -rf ../dist && mv dist ..",
     "preview": "vite preview",
     "build-only": "vite build",

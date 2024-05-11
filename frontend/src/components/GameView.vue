@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref, toRefs, computed, watchEffect } from 'vue'
 import type { ParsedVideoLinkGroup, VideoLink } from '../utils/videolinks'
-const props = defineProps<{
-  selectedVideos: ParsedVideoLinkGroup[]
-}>()
-const { selectedVideos } = toRefs(props)
+import { getAllVideoLinks, getArtistNames } from '../utils/videolinks'
+
 // This component keeps track of shown items
 // On load, it will fetch all youtube links from playlist urls
 const success = ref(null as boolean | null)
@@ -14,6 +12,12 @@ const playerVolume = ref(100);
 const endScreenText = ref("");
 const gameStats = ref([] as {title: string, time: number, wrongGuesses: number}[]);
 const badEnding = ref(false);
+
+const artists = ref(getArtistNames());
+const selectedArtist = ref(artists.value[0]);
+const selectedVideos = computed(() => {
+    return getAllVideoLinks(selectedArtist.value);
+});
 
 if (localStorage.getItem('difficulty')) {
     difficulty.value = localStorage.getItem('difficulty') as string;
@@ -67,12 +71,13 @@ let elapsedTimeInterval = null as number | null;
 
 const videLinksLeft = ref(new Set<string>());
 const correctGuesses = ref(0);
-for (const videoGroup of selectedVideos.value) {
-    for (const link of videoGroup.links) {
-        videLinksLeft.value.add(link.id);
+watchEffect(() => {
+    for (const videoGroup of selectedVideos.value) {
+        for (const link of videoGroup.links) {
+            videLinksLeft.value.add(link.id);
+        }
     }
-}
-
+})
 const songsLeft = computed(() => {
     if (gameLength.value == "short") {
         // if (window.location.host.includes('local') && correctGuesses.value > 0) {
@@ -353,6 +358,9 @@ function shareResult() {
   <div>
     <div v-if="!currentVideoLink" id="start-game">
         <h1>Guess the song!</h1>
+        <select v-model="selectedArtist">
+            <option v-for="value in artists" :key="value" :value="value">{{value}}</option>
+        </select>
         <h2>Click on the correct thumbnail. Incorrect guesses add to score counter. Try to get as low as possible!</h2>
         <p>{{ difficultyInfo }}</p>
         <div class="difficulty">

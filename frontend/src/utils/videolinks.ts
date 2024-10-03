@@ -11,7 +11,7 @@ for(i = 0;i<els.length;i++){
     var title = el.title;
     title = title.replace(/ \(.*\)/g, '');
     title = title.replace(/ \[.*\]/g, '');
-    title = title.replace(//g, '');
+    // title = title.replace(//g, '');
     
     dataList += (title + ";" + el.href.split('?v=')[1].split('&list')[0] + "\n");
 }
@@ -135,6 +135,7 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             data: `
             The Poet and the Pendulum;rVVTiG9UgnE
             Bye Bye Beautiful;iy4ueq0opIw
+            Amaranth;9vmSKzg7nEg
             Cadence of Her Last Breath;V95jbKt-4RA
             Master Passion Greed;hBTRq2Kgt3Q
             Eva;KyB3w1ANk2A
@@ -198,6 +199,23 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
             Tribal;s0bG2ce5blo
             Endlessness;DLFI7Cs7qmk
             All The Works...;RnOdQ5WNZJk
+            `
+        },
+        {
+            "title": "Yesterwynde",
+            "data": `
+            Yesterwynde;laJSKGHw1-g
+            The Day Of...;v1RvxfwuuTk
+            An Ocean Of Strange Islands;0hfx-2HY6ac
+            The Antikythera Mechanism;U8-p9O-Rkao
+            Perfume Of The Timeless;hQ2JhlA6TpU
+            Sway;N_zysIBA5tg
+            The Children Of 'Ata;aKxo0kCa-JM
+            Something Whispered Follow Me;Mf6TuAQmsFQ
+            Spider Silk;ArBJ3-sBH9E
+            Hiraeth;s300U1eRgkE
+            The Weave;f4LvrDnm0FQ
+            Lanternlight;1Upr5yW4nAk
             `
         }
     ]

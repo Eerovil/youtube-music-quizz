@@ -370,6 +370,7 @@ function shareResult() {
         <button id="start-button" @click="getRandomVideo">Start</button>
         <p>Change log</p>
         <ul>
+            <li>03-10-2024 Added Yesterwynde and Amaranth(!)</li>
             <li>06-05-2024 Added Expert mode</li>
             <li>06-05-2024 Added retry after 10 seconds of buffering</li>
             <li>05-05-2024 Added missing songs. Edited Lappi and All the works... to one song</li>

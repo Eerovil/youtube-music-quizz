@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, toRefs, computed, watchEffect } from 'vue'
 import type { ParsedVideoLinkGroup, VideoLink } from '../utils/videolinks'
+import * as Sentry from '@sentry/vue'
 const props = defineProps<{
   selectedVideos: ParsedVideoLinkGroup[]
 }>()
@@ -204,24 +205,29 @@ const onPlayerReady = (event: any) => {
     // play
     event.target.playVideo();
 }
+
 const onPlayerError = (event: any) => {
     let skipVideo = true;
     switch (event.data) {
         case 2:
-        console.error('Invalid video ID.');
+        Sentry.captureException('Invalid video ID ' + currentVideoLink.value?.id);
         break;
         case 5:
         console.error('HTML5 player error.');
+        Sentry.captureException('HTML5 player error ' + currentVideoLink.value?.id);
         break;
         case 100:
         console.error('Video not found or has been removed.');
+        Sentry.captureException('Video not found or has been removed ' + currentVideoLink.value?.id);
         break;
         case 101:
         case 150:
         console.error('Embedding of this video is not allowed.');
+        Sentry.captureException('Embedding of this video is not allowed ' + currentVideoLink.value?.id);
         break;
         default:
         console.error('An unknown error occurred.');
+        Sentry.captureException('An unknown error occurred ' + currentVideoLink.value?.id);
         skipVideo = false;
         break;
     }

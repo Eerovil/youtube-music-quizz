@@ -204,6 +204,31 @@ const onPlayerReady = (event: any) => {
     // play
     event.target.playVideo();
 }
+const onPlayerError = (event: any) => {
+    let skipVideo = true;
+    switch (event.data) {
+        case 2:
+        console.error('Invalid video ID.');
+        break;
+        case 5:
+        console.error('HTML5 player error.');
+        break;
+        case 100:
+        console.error('Video not found or has been removed.');
+        break;
+        case 101:
+        case 150:
+        console.error('Embedding of this video is not allowed.');
+        break;
+        default:
+        console.error('An unknown error occurred.');
+        skipVideo = false;
+        break;
+    }
+    if (skipVideo) {
+        getRandomVideo();
+    }
+}
 const onPlayerStateChange = (event: any) => {
     console.log('Player state change', event);
     if (event.data === 0) {
@@ -275,6 +300,7 @@ watchEffect(() => {
             videoId: currentVideoLink.value?.id,
                 events: {
                     'onReady': onPlayerReady,
+                    'onError': onPlayerError,
                     'onStateChange': onPlayerStateChange
                 }
             });

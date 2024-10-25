@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite --port 3000 --host 0.0.0.0",
     "build": "run-p type-check \"build-only {@}\" -- && rm -rf ../dist && mv dist ..",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -13,6 +13,8 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@sentry/vite-plugin": "^2.22.6",
+    "@sentry/vue": "^8.35.0",
     "vue": "^3.4.21",
     "vue-router": "4"
   },

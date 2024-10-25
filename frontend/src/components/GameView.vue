@@ -402,6 +402,7 @@ function shareResult() {
         <button id="start-button" @click="getRandomVideo">Start</button>
         <p>Change log</p>
         <ul>
+            <li>25-10-2024 Failed to play songs will now skip</li>
             <li>03-10-2024 Added Yesterwynde and Amaranth(!)</li>
             <li>06-05-2024 Added Expert mode</li>
             <li>06-05-2024 Added retry after 10 seconds of buffering</li>

@@ -209,29 +209,39 @@ const onPlayerReady = (event: any) => {
 
 const onPlayerError = (event: any) => {
     let skipVideo = true;
+    let errorMsg = '';
     switch (event.data) {
         case 2:
-        Sentry.captureException('Invalid video ID ' + currentVideoLink.value?.id);
+        errorMsg = 'Invalid video ID';
+        console.error('Invalid video ID');
         break;
         case 5:
+        errorMsg = 'HTML5 player error.';
         console.error('HTML5 player error.');
-        Sentry.captureException('HTML5 player error ' + currentVideoLink.value?.id);
         break;
         case 100:
+        errorMsg = 'Video not found or has been removed.';
         console.error('Video not found or has been removed.');
-        Sentry.captureException('Video not found or has been removed ' + currentVideoLink.value?.id);
         break;
         case 101:
         case 150:
+        errorMsg = 'Embedding of this video is not allowed.';
         console.error('Embedding of this video is not allowed.');
-        Sentry.captureException('Embedding of this video is not allowed ' + currentVideoLink.value?.id);
         break;
         default:
+        errorMsg = 'An unknown error occurred.';
         console.error('An unknown error occurred.');
-        Sentry.captureException('An unknown error occurred ' + currentVideoLink.value?.id);
         skipVideo = false;
         break;
     }
+    Sentry.captureException(new Error(errorMsg), {
+        extra: {
+            videoId: currentVideoLink.value?.id
+        },
+        tags: {
+            videoId: currentVideoLink.value?.id
+        }
+    });
     if (skipVideo) {
         skippedSongs.value++;
         getRandomVideo();

@@ -133,19 +133,19 @@ const videoLinks: { [key: string]: VideoLinkGroup[] } = {
         {
             title: "Dark Passion Play",
             data: `
-            The Poet and the Pendulum;rVVTiG9UgnE
-            Bye Bye Beautiful;iy4ueq0opIw
-            Amaranth;9vmSKzg7nEg
-            Cadence of Her Last Breath;V95jbKt-4RA
-            Master Passion Greed;hBTRq2Kgt3Q
+            The Poet and the Pendulum;2bPi2ojKOmI
+            Bye Bye Beautiful;hTdhXxxWREo
+            Amaranth;GdZn7k5rZLQ
+            Cadence of Her Last Breath;0Mxtab4bfQw
+            Master Passion Greed;E1OANUnndlw
             Eva;EcsTNVc7b7U
-            Sahara;OY8C5BcMKag
-            Whoever Brings the Night;0yQlDpN8db8
-            For the Heart I Once Had;2FjsufSjPSw
-            The Islander;JnYG0UdwTRk
-            Last of the Wilds;cWTdFolXEgA
-            7 Days to the Wolves;aKeL83LFUSo
-            Meadows of Heaven;AY9VI2B71bk
+            Sahara;veNhQ79Dbo4
+            Whoever Brings the Night;f7-o3pHr4Wo
+            For the Heart I Once Had;NeV3YQVW1io
+            The Islander;--tFFz44zvc
+            Last of the Wilds;X6Q3icWHXhU
+            7 Days to the Wolves;BRW4heme3dY
+            Meadows of Heaven;PIkC0ripKuw
             Escapist;eKuCFk1j_Io
             While Your Lips Are Still Red;Kmiw4FYTg2U
             `

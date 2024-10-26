@@ -9,6 +9,7 @@ const { selectedVideos } = toRefs(props)
 // This component keeps track of shown items
 // On load, it will fetch all youtube links from playlist urls
 const success = ref(null as boolean | null)
+const skippedSongs = ref(0)
 const difficulty = ref("easy");
 const gameLength = ref("short");
 const playerVolume = ref(100);
@@ -232,6 +233,7 @@ const onPlayerError = (event: any) => {
         break;
     }
     if (skipVideo) {
+        skippedSongs.value++;
         getRandomVideo();
     }
 }
@@ -416,7 +418,7 @@ function shareResult() {
     <div id="score-overlay" :class="{'scorehidden': !currentVideoLink}">
         <div>
             <p>Score: {{ elapsedSeconds }}</p>
-            <p>Songs left: {{ songsLeft }}</p>
+            <p>Songs left: {{ songsLeft }}<span v-if="skippedSongs > 0"> (Skipped {{ skippedSongs }})</span></p>
         </div>
         <span v-if="buffering">Buffering...</span>
         <div style="display: flex; flex-direction: column;">
